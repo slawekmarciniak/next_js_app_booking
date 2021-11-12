@@ -1,9 +1,10 @@
 import Head from "next/head";
+
 import MainLayout from "../components/layouts/MainLayout";
 
 import styles from "../styles/Home.module.css";
 
-export default function Home() {
+export default function Home({ offers }) {
   return (
     <>
       <Head>
@@ -14,10 +15,36 @@ export default function Home() {
       <MainLayout>
         <h1>home</h1>
         <div className={styles.container}>
-          <main className={styles.main}></main>
+          <main className={styles.main}>
+            {offers &&
+              offers.map((offer) => (
+                <div
+                  key={`offer-${offer.id}`}
+                  className={styles.offersContainer}
+                >
+                  <div>
+                    <img src={offer.cover} alt="aa" />
+                  </div>
+                  <h3>{offer.name}</h3>
+                  <p>
+                    {offer.street}, {offer.postal__code} {offer.city}
+                  </p>
+                </div>
+              ))}
+          </main>
           <footer className={styles.footer}></footer>
         </div>
       </MainLayout>
     </>
   );
+}
+export async function getServerSideProps() {
+  const response = await fetch("http://localhost:3000/api/offers");
+  const data = await response.json();
+
+  return {
+    props: {
+      offers: data,
+    },
+  };
 }
